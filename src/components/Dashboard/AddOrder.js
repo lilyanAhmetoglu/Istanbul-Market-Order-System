@@ -8,9 +8,9 @@ import {
   populateOptionFields,
   resetFields,
 } from "../utils/Forms/formActions";
-
+import FileUpload from "../utils/Forms/fileupload";
 import { connect } from "react-redux";
-import { addOrder } from "../../actions/order_actions";
+import { addOrder,addItem } from "../../actions/order_actions";
 import { getCustomers } from "../../actions/customer_actions";
 
 class AddOrder extends Component {
@@ -109,8 +109,47 @@ class AddOrder extends Component {
         showlabel: true,
       },
     },
+    itemdata:{
+      description: {
+        element: "input",
+        value: "",
+        config: {
+          label: "الوصف ",
+          name: "des_input",
+          type: "text",
+          placeholder: "أدخل وصف الطلب",
+        },
+        validation: {
+          required: false,
+        },
+        valid: false,
+        touched: false,
+        validationMessage: "",
+        showlabel: true,
+      },
+      images: {
+        value: [],
+        validation: {
+          required: false,
+        },
+        valid: true,
+        touched: false,
+        validationMessage: "",
+        showlabel: false,
+      },
+    }
   };
+  imagesHandler = (images) => {
+    const newItemData = {
+      ...this.state.itemdata,
+    };
+    newItemData["images"].value = images;
+    newItemData["images"].valid = true;
 
+    this.setState({
+      itemdata: newItemData,
+    });
+  };
   updateFields = (newFormdata) => {
     this.setState({
       formdata: newFormdata,
@@ -123,6 +162,13 @@ class AddOrder extends Component {
       formdata: newFormdata,
     });
   };
+  updateItemForm = (element) => {
+    const newItemData = update(element, this.state.itemdata, "items");
+    this.setState({
+      formError: false,
+      itemdata: newItemData,
+    });
+  };
   submitForm = (event) => {
     event.preventDefault();
 
@@ -132,6 +178,25 @@ class AddOrder extends Component {
     if (formIsValid) {
       this.props.dispatch(addOrder(dataToSubmit)).then(() => {
         if (this.props.orders.addOrder.success) {
+        } else {
+          this.setState({ formError: true });
+        }
+      });
+    } else {
+      this.setState({
+        formError: true,
+      });
+    }
+  };
+  submitItem = (event) => {
+    event.preventDefault();
+
+    let dataToSubmit = generateData(this.state.itemdata, "items");
+    let formIsValid = isFormValid(this.state.itemdata, "items");
+
+    if (formIsValid) {
+      this.props.dispatch(addItem(dataToSubmit)).then(() => {
+        if (this.props.items.addItem.success) {
         } else {
           this.setState({ formError: true });
         }
@@ -201,6 +266,33 @@ class AddOrder extends Component {
             ) : null}
             <button onClick={(event) => this.submitForm(event)}>
               Add order
+            </button>
+          </form>
+          <hr/>
+          <h1>اضافة عنصر</h1>
+          <form
+            onSubmit={(event) => this.submitItem(event)}
+            style={{ marginTop: "30px" }}
+          >
+           <FileUpload
+              imagesHandler={(images) => this.imagesHandler(images)}
+              reset={this.state.formSuccess}
+            />
+            <FormField
+              id={"description"}
+              formdata={this.state.itemdata.description}
+              change={(element) => this.updateItemForm(element)}
+            />
+
+            {this.state.formSuccess ? (
+              <div className="form_success">Success</div>
+            ) : null}
+
+            {this.state.formError ? (
+              <div className="error_label">Please check your data</div>
+            ) : null}
+            <button onClick={(event) => this.submitItem(event)}>
+              اضف عنصر
             </button>
           </form>
         </div>

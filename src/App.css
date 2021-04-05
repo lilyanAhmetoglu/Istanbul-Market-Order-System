@@ -28,3 +28,29 @@ body{
   top: 0; left: 0; bottom: 0; right: 0;
 
 }
+.dropzone {
+  border: 1px solid #e5e5e5;
+  margin-bottom: 40px;
+  width: 50%;
+}
+
+.dropzone_box {
+  float: left;
+  width: 100%;
+  height: 160px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.dropzone_box .wrap {
+  background: #eaeaea;
+  height: 100%;
+  text-align: center;
+  padding-top: 31px;
+  box-sizing: border-box;
+  font-size: 49px;
+  background-size: contain !important;
+  background-position: center center !important;
+  border: 1px solid #eaeaea;
+}
+
